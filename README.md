@@ -39,32 +39,33 @@ The architecture involves:
 ### Step 2: Install BIND (DNS Server)
 ```bash
 sudo yum install bind bind-utils -y
-Step 3: Install ISC-DHCP Server
-bash
-Copy code
+```
+### Step 3: Install ISC-DHCP Server
+```bash
 sudo yum install dhcp-server -y
-Configuration
-Step 1: Configure BIND for DNS
-Edit the /etc/named.conf file to define:
-Forward and reverse DNS zones.
-Access control lists (ACLs).
-Recursion settings for internal name resolution.
-Example zone configuration in /etc/named/yourdomain.com.zone:
-bash
-Copy code
+```
+
+
+## Configuration
+### Step 1: Configure BIND for DNS
+1. Edit the /etc/named.conf file to define:
+- Forward and reverse DNS zones.
+- Access control lists (ACLs).
+- Recursion settings for internal name resolution.
+2. Example zone configuration in /etc/named/yourdomain.com.zone:
+```bash
 zone "yourdomain.com" {
     type master;
     file "/var/named/yourdomain.com.zone";
     allow-query { any; };
 };
-Step 2: Configure ISC-DHCP for DHCP
-Edit /etc/dhcp/dhcpd.conf to:
-Define subnets and IP address ranges.
-Set default lease times and options like DNS server and gateway.
-Example configuration:
-
-bash
-Copy code
+```
+### Step 2: Configure ISC-DHCP for DHCP
+1. Edit /etc/dhcp/dhcpd.conf to:
+- Define subnets and IP address ranges.
+- Set default lease times and options like DNS server and gateway.
+2. Example configuration:
+```bash
 subnet 192.168.56.0 netmask 255.255.255.0 {
     range 192.168.56.100 192.168.56.200;
     option domain-name-servers 192.168.56.1;
@@ -72,40 +73,45 @@ subnet 192.168.56.0 netmask 255.255.255.0 {
     default-lease-time 600;
     max-lease-time 7200;
 }
-Step 3: Start and Enable Services
-bash
-Copy code
+```
+### Step 3: Start and Enable Services
+```bash
 sudo systemctl enable named
 sudo systemctl start named
 sudo systemctl enable dhcpd
 sudo systemctl start dhcpd
-Administration
-DNS Server: Use rndc reload to reload DNS zones after editing zone files.
-DHCP Server: Monitor lease assignments and update configurations as needed. Ensure the correct IP range is defined.
-Logs: Check /var/log/messages and /var/log/named for troubleshooting and monitoring server health.
-Testing and Validation
-Step 1: Test DNS Queries
-On a client machine within the same network, test DNS resolution:
+```
 
-bash
-Copy code
+
+## Administration
+- DNS Server: Use rndc reload to reload DNS zones after editing zone files.
+- DHCP Server: Monitor lease assignments and update configurations as needed. Ensure the correct IP range is defined.
+- Logs: Check /var/log/messages and /var/log/named for troubleshooting and monitoring server health.
+
+
+## Testing and Validation
+### Step 1: Test DNS Queries
+On a client machine within the same network, test DNS resolution:
+```bash
 dig @<DNS-Server-IP> <domain-name>
-Step 2: Test DHCP Lease Assignment
+```
+### Step 2: Test DHCP Lease Assignment
 On a client machine (another VM or physical host):
 
 Ensure the client is set to obtain an IP via DHCP.
-Run:
-bash
-Copy code
+```bash
 sudo dhclient -r
 sudo dhclient
-Step 3: Check Connectivity
-Ping the DNS server and resolve domain names to verify proper configuration:
+```
 
-bash
-Copy code
+### Step 3: Check Connectivity
+Ping the DNS server and resolve domain names to verify proper configuration:
+```bash
 ping yourdomain.com
-Troubleshooting
-DNS Issues: Ensure correct syntax in zone files and use named-checkconf and named-checkzone for validation.
-DHCP Issues: Check /var/log/messages for errors and ensure IP ranges do not conflict with the host network.
-Firewall: Verify that firewalld or iptables allows traffic on ports 53 (DNS) and 67/68 (DHCP).
+```
+
+
+## Troubleshooting
+- DNS Issues: Ensure correct syntax in zone files and use named-checkconf and named-checkzone for validation.
+- DHCP Issues: Check /var/log/messages for errors and ensure IP ranges do not conflict with the host network.
+- Firewall: Verify that firewalld or iptables allows traffic on ports 53 (DNS) and 67/68 (DHCP).
